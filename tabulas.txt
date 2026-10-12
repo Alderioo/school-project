@@ -1,0 +1,10 @@
+lietotaja dati
+autori
+valsti no kurienas ir gramatas
+klientu skaits
+cik gramatas ir nodotas
+cik gramatas ir biblioteka
+algas
+darbinieki
+bibliotekas
+sodi
