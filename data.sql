@@ -1,0 +1,133 @@
+CREATE TABLE IF NOT EXISTS 'Lietotājs' (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Vārds` TEXT(65535),
+	`Uzvārds` TEXT(65535),
+	`Vecums` INTEGER,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `Autors` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Vārds` TEXT(65535),
+	`Uzvārds` TEXT(65535),
+	`Valsts` TEXT(65535),
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `valsti no kurienas ir gramatas` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Valsts` TEXT(65535),
+	`Pilsēta` TEXT(65535),
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `klientu skaits` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Klienta kategorija` TEXT(65535),
+	`Dinamisks skaits` TEXT(65535),
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `grāmatas vēsture` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Kad nodota` TEXT(65535),
+	`Kad atgriezta` TEXT(65535),
+	`Kam atdota` TEXT(65535),
+	`Kur glabjas` TEXT(65535),
+	`Nosaukums` ,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `grāmatas` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Skaits` TEXT(65535),
+	`Nodotas` TEXT(65535),
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `algas` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Vārds` TEXT(65535),
+	`Uzvārds` TEXT(65535),
+	`Algas daudzums` FLOAT,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `darbinieki` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Amats` TEXT(65535),
+	`Vārds` TEXT(65535),
+	`Uzvārds` TEXT(65535),
+	`Telefona numurs` TEXT(65535),
+	`Vecums` INTEGER,
+	`Dzimums` TEXT(65535),
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `bibliotekas` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Valsts` TEXT(65535),
+	`Pilsēta` TEXT(65535),
+	`Nosaukums` TEXT(65535),
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `Sodi` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`Vārds` TEXT(65535),
+	`Uzvārds` TEXT(65535),
+	`Soda dzudzums` FLOAT,
+	`Iemesls` TEXT(65535),
+	`Datums` TEXT(65535),
+	PRIMARY KEY(`id`)
+);
+
+
+ALTER TABLE `Sodi`
+ADD FOREIGN KEY(`id`) REFERENCES `Lietotājs`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `Sodi`
+ADD FOREIGN KEY(`Uzvārds`) REFERENCES `Lietotājs`(`Uzvārds`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `darbinieki`
+ADD FOREIGN KEY(`id`) REFERENCES `algas`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `darbinieki`
+ADD FOREIGN KEY(`id`) REFERENCES `Sodi`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `Lietotājs`
+ADD FOREIGN KEY(`Vārds`) REFERENCES `Sodi`(`Vārds`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `darbinieki`
+ADD FOREIGN KEY(`Vārds`) REFERENCES `Sodi`(`Vārds`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `darbinieki`
+ADD FOREIGN KEY(`Uzvārds`) REFERENCES `Sodi`(`Uzvārds`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `valsti no kurienas ir gramatas`
+ADD FOREIGN KEY(`id`) REFERENCES `grāmatas vēsture`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `bibliotekas`
+ADD FOREIGN KEY(`Nosaukums`) REFERENCES `grāmatas vēsture`(`Kur glabjas`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `grāmatas`
+ADD FOREIGN KEY(`id`) REFERENCES `valsti no kurienas ir gramatas`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `algas`
+ADD FOREIGN KEY(`Vārds`) REFERENCES `darbinieki`(`Vārds`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `algas`
+ADD FOREIGN KEY(`Uzvārds`) REFERENCES `darbinieki`(`Uzvārds`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `grāmatas vēsture`
+ADD FOREIGN KEY(`Kam atdota`) REFERENCES `Lietotājs`(`Vārds`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
