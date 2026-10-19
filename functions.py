@@ -1,106 +1,130 @@
 import sqlite3
+from pathlib import Path
+
+DATABASE_PATH = Path(__file__).with_name("biblioteka.db")
 
 def izveidot_datubazi():
-    conn = sqlite3.connect('biblioteka.db')
+    conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
 
     cursor.execute("PRAGMA foreign_keys = ON;")
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Lietotajs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Vards TEXT,
-        Uzvards TEXT,
-        Vecums INTEGER
-    )
+    cursor.executescript('''
+    CREATE TABLE IF NOT EXISTS "Lietotajs" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "vards" TEXT NOT NULL,
+        "uzvards" TEXT NOT NULL,
+        "vecums" INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS "Autors" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "vards" TEXT NOT NULL,
+        "uzvards" TEXT NOT NULL,
+        "valsts" TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS "valstis" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "valsts" TEXT NOT NULL,
+        "pilseta" TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS "klientu_skaits" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "klienta_kategorija" TEXT NOT NULL,
+        "dinamisks_skaits" TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS "bibliotekas" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "valsts" TEXT NOT NULL,
+        "pilseta" TEXT NOT NULL,
+        "nosaukums" TEXT UNIQUE NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS "gramatas" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "skaits" TEXT NOT NULL,
+        "nodotas" TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS "gramatas_vesture" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "kad_nodota" TEXT NOT NULL,
+        "kad_atgriezta" TEXT NOT NULL,
+        "lietotaja_id" INTEGER NOT NULL,
+        "kur_glabjas" TEXT NOT NULL,
+        "nosaukums" TEXT NOT NULL,
+        FOREIGN KEY ("lietotaja_id") REFERENCES "Lietotajs"("id") ON UPDATE NO ACTION ON DELETE NO ACTION,
+        FOREIGN KEY ("kur_glabjas") REFERENCES "bibliotekas"("nosaukums") ON UPDATE NO ACTION ON DELETE NO ACTION
+    );
+
+    CREATE TABLE IF NOT EXISTS "darbinieki" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "amats" TEXT NOT NULL,
+        "vards" TEXT NOT NULL,
+        "uzvards" TEXT NOT NULL,
+        "telefona_numurs" TEXT NOT NULL,
+        "vecums" INTEGER NOT NULL,
+        "dzimums" TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS "algas" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "darbinieka_id" INTEGER NOT NULL,
+        "algas_daudzums" REAL NOT NULL,
+        FOREIGN KEY ("darbinieka_id") REFERENCES "darbinieki"("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+    );
+
+    CREATE TABLE IF NOT EXISTS "Sodi" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "lietotaja_id" INTEGER NOT NULL,
+        "soda_daudzums" REAL NOT NULL,
+        "iemesls" TEXT NOT NULL,
+        "datums" TEXT NOT NULL,
+        FOREIGN KEY ("lietotaja_id") REFERENCES "Lietotajs"("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+    );
     ''')
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Autors (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Vards TEXT,
-        Uzvards TEXT,
-        Valsts TEXT
-    )
-    ''')
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS valsti_no_kurienas_ir_gramatas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Valsts TEXT,
-        Pilsēta TEXT
-    )
-    ''')
+    cursor.executescript('''
+    INSERT OR IGNORE INTO "Lietotajs" (id, vards, uzvards, vecums) VALUES
+        (1, 'Jānis', 'Bērziņš', 25),
+        (2, 'Anna', 'Kalniņa', 30),
+        (3, 'Mārtiņš', 'Ozoliņš', 22);
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS klientu_skaits (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Klienta_kategorija TEXT,
-        Dinamisks_skaits TEXT
-    )
-    ''')
+    INSERT OR IGNORE INTO "Autors" (id, vards, uzvards, valsts) VALUES
+        (1, 'Rainis', '', 'Latvija'),
+        (2, 'Aspazija', '', 'Latvija');
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS bibliotekas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Valsts TEXT,
-        Pilsēta TEXT,
-        Nosaukums TEXT UNIQUE
-    )
-    ''')
+    INSERT OR IGNORE INTO "valstis" (id, valsts, pilseta) VALUES
+        (1, 'Latvija', 'Rīga'),
+        (2, 'Lielbritānija', 'Londona');
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS gramatas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Skaits TEXT,
-        Nodotas TEXT,
-        FOREIGN KEY (id) REFERENCES valsti_no_kurienas_ir_gramatas(id)
-    )
-    ''')
+    INSERT OR IGNORE INTO "klientu_skaits" (id, klienta_kategorija, dinamisks_skaits) VALUES
+        (1, 'Studenti', '150'),
+        (2, 'Pensionāri', '80');
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS gramatas_vesture (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Kad_nodota TEXT,
-        Kad_atgriezta TEXT,
-        Lietotaja_id INTEGER,
-        Kur_glabjas TEXT,
-        Nosaukums TEXT,
-        FOREIGN KEY (Lietotaja_id) REFERENCES Lietotajs(id),
-        FOREIGN KEY (Kur_glabjas) REFERENCES bibliotekas(Nosaukums)
-    )
-    ''')
+    INSERT OR IGNORE INTO "bibliotekas" (id, valsts, pilseta, nosaukums) VALUES
+        (1, 'Latvija', 'Rīga', 'Centrālā bibliotēka'),
+        (2, 'Latvija', 'Liepāja', 'Pilsētas bibliotēka');
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS darbinieki (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Amats TEXT,
-        Vards TEXT,
-        Uzvards TEXT,
-        Telefona_numurs TEXT,
-        Vecums INTEGER,
-        Dzimums TEXT
-    )
-    ''')
+    INSERT OR IGNORE INTO "gramatas" (id, skaits, nodotas) VALUES
+        (1, '100', '15'),
+        (2, '50', '5');
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS algas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Darbinieka_id INTEGER,
-        Algas_daudzums REAL,
-        FOREIGN KEY (Darbinieka_id) REFERENCES darbinieki(id)
-    )
-    ''')
+    INSERT OR IGNORE INTO "gramatas_vesture" (id, kad_nodota, kad_atgriezta, lietotaja_id, kur_glabjas, nosaukums) VALUES
+        (1, '2026-10-01', '2026-10-15', 1, 'Centrālā bibliotēka', 'Uguns un nakts');
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Sodi (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Lietotaja_id INTEGER,
-        Soda_daudzums REAL,
-        Iemesls TEXT,
-        Datums TEXT,
-        FOREIGN KEY (Lietotaja_id) REFERENCES Lietotajs(id)
-    )
+    INSERT OR IGNORE INTO "darbinieki" (id, amats, vards, uzvards, telefona_numurs, vecums, dzimums) VALUES
+        (1, 'Bibliotekārs', 'Ilze', 'Liepa', '+37120000000', 40, 'Sieviete');
+
+    INSERT OR IGNORE INTO "algas" (id, darbinieka_id, algas_daudzums) VALUES
+        (1, 1, 1200.50);
+
+    INSERT OR IGNORE INTO "Sodi" (id, lietotaja_id, soda_daudzums, iemesls, datums) VALUES
+        (1, 1, 5.00, 'Nokavēts termiņš', '2026-10-16');
     ''')
 
     conn.commit()
