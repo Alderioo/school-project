@@ -33,7 +33,7 @@ def izveidot_datubazi():
     CREATE TABLE IF NOT EXISTS "klientu_skaits" (
         "id" INTEGER PRIMARY KEY AUTOINCREMENT,
         "klienta_kategorija" TEXT NOT NULL,
-        "dinamisks_skaits" TEXT NOT NULL
+        "dinamisks_skaits" INTEGER NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS "bibliotekas" (
@@ -45,8 +45,8 @@ def izveidot_datubazi():
 
     CREATE TABLE IF NOT EXISTS "gramatas" (
         "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-        "skaits" TEXT NOT NULL,
-        "nodotas" TEXT NOT NULL
+        "skaits" INTEGER NOT NULL,
+        "nodotas" INTEGER NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS "gramatas_vesture" (
@@ -65,7 +65,7 @@ def izveidot_datubazi():
         "amats" TEXT NOT NULL,
         "vards" TEXT NOT NULL,
         "uzvards" TEXT NOT NULL,
-        "telefona_numurs" TEXT NOT NULL,
+        "telefona_numurs" INTEGER NOT NULL,
         "vecums" INTEGER NOT NULL,
         "dzimums" TEXT NOT NULL
     );
@@ -73,14 +73,14 @@ def izveidot_datubazi():
     CREATE TABLE IF NOT EXISTS "algas" (
         "id" INTEGER PRIMARY KEY AUTOINCREMENT,
         "darbinieka_id" INTEGER NOT NULL,
-        "algas_daudzums" REAL NOT NULL,
+        "algas_daudzums" INTEGER NOT NULL,
         FOREIGN KEY ("darbinieka_id") REFERENCES "darbinieki"("id") ON UPDATE NO ACTION ON DELETE NO ACTION
     );
 
     CREATE TABLE IF NOT EXISTS "Sodi" (
         "id" INTEGER PRIMARY KEY AUTOINCREMENT,
         "lietotaja_id" INTEGER NOT NULL,
-        "soda_daudzums" REAL NOT NULL,
+        "soda_daudzums" INTEGER NOT NULL,
         "iemesls" TEXT NOT NULL,
         "datums" TEXT NOT NULL,
         FOREIGN KEY ("lietotaja_id") REFERENCES "Lietotajs"("id") ON UPDATE NO ACTION ON DELETE NO ACTION
