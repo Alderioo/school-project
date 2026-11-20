@@ -29,6 +29,3 @@ Licenzēts MIT License
 ## Contact
 joeerto@gmail.com
 * * *
-### Additional info
-Tas ir datu bāzes izskats
-![Alt text for the image](images/vizuala%20datu%20baze.png)
