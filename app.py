@@ -8,15 +8,21 @@ TABLES = {
     "Lietotajs": ["vards", "uzvards", "vecums"],
     "Autors": ["vards", "uzvards", "valsts"],
     "valstis": ["valsts", "pilseta"],
-    "klientu_skaits": ["klienta_kategorija", "dinamisks_skaits"],
-    "bibliotekas": ["valsts", "pilseta", "nosaukums"],
-    "gramatas": ["skaits", "nodotas"],
+    "bibliotekas": ["valsts_id", "nosaukums"],
+    "klientu_skaits": ["bibliotekas_id", "klienta_kategorija", "dinamisks_skaits"],
+    "gramatas": [
+        "bibliotekas_id",
+        "autora_id",
+        "nosaukums",
+        "skaits",
+        "nodotas",
+    ],
     "gramatas_vesture": [
+        "gramatas_id",
+        "lietotaja_id",
+        "bibliotekas_id",
         "kad_nodota",
         "kad_atgriezta",
-        "lietotaja_id",
-        "kur_glabjas",
-        "nosaukums",
     ],
     "darbinieki": [
         "amats",
@@ -100,22 +106,46 @@ class InputModal(tk.Toplevel):
 
   def on_save(self):
     values = []
-    
-    numeric_columns = ["vecums", "telefona_numurs", "skaits", "dinamisks_skaits", "algas_daudzums", "soda_daudzums", "lietotaja_id", "darbinieka_id"]
-    
-    text_columns = ["vards", "uzvards", "valsts", "pilseta", "nosaukums", "amats", "dzimums", "iemesls", "klienta_kategorija"]
+
+    numeric_columns = [
+        "vecums",
+        "telefona_numurs",
+        "skaits",
+        "nodotas",
+        "dinamisks_skaits",
+        "algas_daudzums",
+        "soda_daudzums",
+        "lietotaja_id",
+        "darbinieka_id",
+        "valsts_id",
+        "bibliotekas_id",
+        "autora_id",
+        "gramatas_id",
+    ]
+
+    text_columns = [
+        "vards",
+        "uzvards",
+        "valsts",
+        "pilseta",
+        "nosaukums",
+        "amats",
+        "dzimums",
+        "iemesls",
+        "klienta_kategorija",
+    ]
 
     for column in self.columns:
       val = self.entries[column].get().strip()
 
       if column in numeric_columns:
-        if not val.isdigit(): 
+        if not val.isdigit():
           messagebox.showerror(
               "Kļūda",
               f"Laukā '{column}' drīkst ievadīt TIKAI ciparus!",
               parent=self,
           )
-          return  
+          return
       elif column in text_columns:
         if val.isdigit():
           messagebox.showerror(
@@ -123,7 +153,7 @@ class InputModal(tk.Toplevel):
               f"Laukā '{column}' drīkst ievadīt TIKAI tekstu (nevis ciparus)!",
               parent=self,
           )
-          return 
+          return
 
       if val.isdigit():
         values.append(int(val))
@@ -282,7 +312,7 @@ class LibraryApp:
     self.table_box.pack(side="left", padx=(0, 25))
     self.table_box.bind("<<ComboboxSelected>>", self.load_table)
 
-    ttk.Label(top_frame, text="ПОИСК ПО:", style="Header.TLabel").pack(
+    ttk.Label(top_frame, text="Meklēt pēc:", style="Header.TLabel").pack(
         side="left", padx=(0, 8)
     )
     self.search_field_box = ttk.Combobox(
@@ -390,7 +420,7 @@ class LibraryApp:
     modal = InputModal(
         self.root, f"Pievienot ierakstu: {table}", TABLES[table]
     )
-    self.root.wait_window(modal)  # Ждем закрытия кастомного окна
+    self.root.wait_window(modal)
 
     if modal.result:
       try:
